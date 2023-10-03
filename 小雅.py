@@ -1,8 +1,30 @@
 import os
 import re
 from typing import Any, TextIO
-
 import requests
+from bs4 import BeautifulSoup,element
+
+
+
+def login(username: str, password: str) -> str:
+    login_url = "https://account.ccnu.edu.cn/cas/login?service=https%3A%2F%2Fccnu.ai-augmented.com%2Fapi%2Fjw-starcmooc%2Fuser%2Fcas%2Flogin%3FschoolCertify%3D10511"
+    dialog = requests.session()
+    dialog.headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36 Edg/117.0.2045.47"
+    }
+    dialog.get(url=login_url)
+    login_html = dialog.get(url=login_url)
+    soup = BeautifulSoup(login_html.text,"html.parser")
+    login_row = soup.find(class_="row btn-row")
+    data = {"username": username, "password": password}
+    for login_btn in login_row.children:
+        if type(login_btn) == element.NavigableString:
+            continue
+        if login_btn['name'] == "resetpass":
+            continue
+        data.update({login_btn["name"]: login_btn["value"]})
+    dialog.post(url=login_url, data=data)
+    return "Bearer " + dialog.cookies.get("HS-prd-access-token")
 
 
 def get_json(url: str, headers: dict) -> bool | dict:
@@ -92,7 +114,8 @@ def makedir_and_download(file_tree: dict, headers: dict, video: bool, log) -> No
             os.chdir(name)
             log.write("已创建" + os.getcwd() + "\\" + name + "\n")
             log.flush()
-            makedir_and_download(file_tree=i, headers=headers, video=video, log=log)
+            if i.get("children"):
+                makedir_and_download(file_tree=i, headers=headers, video=video, log=log)
             os.chdir("../")
         elif type == 6:
             download_wps(item_json=i, headers=headers, log=log)
@@ -134,7 +157,9 @@ def download_video(item_json: dict, headers: dict, log) -> None:
 
 
 if __name__ == "__main__":
-    Authorization = input("请输入您的Authorization：")
+    username = input("请输入您的帐号：")
+    password = input("请输入您的密码：")
+    Authorization = login(username=username, password=password)
     headers = {"Authorization": Authorization}
     name_list, id_list = get_course(headers=headers)
     choose(name_list=name_list, id_list=id_list)
