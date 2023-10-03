@@ -1,9 +1,10 @@
 import os
 import re
+from time import sleep
 from typing import Any, TextIO
+import maskpass
 import requests
-from bs4 import BeautifulSoup,element
-
+from bs4 import BeautifulSoup, element
 
 
 def login(username: str, password: str) -> str:
@@ -14,7 +15,7 @@ def login(username: str, password: str) -> str:
     }
     dialog.get(url=login_url)
     login_html = dialog.get(url=login_url)
-    soup = BeautifulSoup(login_html.text,"html.parser")
+    soup = BeautifulSoup(login_html.text, "html.parser")
     login_row = soup.find(class_="row btn-row")
     data = {"username": username, "password": password}
     for login_btn in login_row.children:
@@ -44,10 +45,10 @@ def get_course(headers: dict) -> tuple[list[Any], list[Any]]:
 def choose(name_list: list, id_list: list) -> None:
     for i in range(len(name_list)):
         print(f"{i}.{name_list[i]}")
-    temp = int(input("请输入你要爬取的课程编号"))
+    temp = int(input("请输入你要爬取的课程编号:"))
     while temp not in range(len(name_list)):
         print("输入有误")
-        temp = int(input("请输入你要爬取的课程编号"))
+        temp = int(input("请输入你要爬取的课程编号:"))
     url = ("https://ccnu.ai-augmented.com/api/jx-iresource/resource/queryCourseResources?group_id=" + id_list[temp])
     download_yes = input("将下载可下载的视频资源，是否下载(Y/n):")
     if download_yes == "N" or download_yes == "n":
@@ -77,12 +78,12 @@ def make_root(course_id: str) -> TextIO:
     i = 1
     while os.path.exists(name):
         if i == 1:
-            log.write(f"{name}-路径已存在")
+            log.write(f"{name}-路径已存在\n")
         try:
-            log.write(f"将其重名为{name}({i})")
+            log.write(f"将其重名为{name}({i})\n")
             os.rename(name, f"{name}({i})")
         except:
-            log.write(f"{name}({i})已存在")
+            log.write(f"{name}({i})已存在\n")
             i = i + 1
     os.mkdir(name)
     os.chdir(name)
@@ -123,6 +124,7 @@ def makedir_and_download(file_tree: dict, headers: dict, video: bool, log) -> No
             download_video(item_json=i, headers=headers, log=log)
 
 
+
 def download_wps(item_json: dict, headers: dict, log) -> None:
     quote_id: str = item_json.get("quote_id")
     url: str = ("https://ccnu.ai-augmented.com/api/jx-oresource/cloud/file_url/" + quote_id)
@@ -157,9 +159,17 @@ def download_video(item_json: dict, headers: dict, log) -> None:
 
 
 if __name__ == "__main__":
-    username = input("请输入您的帐号：")
-    password = input("请输入您的密码：")
+    username = input("请输入您的帐号:")
+    password = maskpass.askpass(prompt="请输入您的密码：", mask="*")
     Authorization = login(username=username, password=password)
     headers = {"Authorization": Authorization}
     name_list, id_list = get_course(headers=headers)
-    choose(name_list=name_list, id_list=id_list)
+    while True:
+        choose(name_list=name_list, id_list=id_list)
+        check = input("是否继续(Y/n)")
+        os.chdir("../")
+        if check == "N" or check == "n":
+            print("感谢使用")
+            sleep(5)
+            exit()
+        os.system("cls")
