@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup, element
 
 
 def login(username: str, password: str) -> str:
-    login_url = "https://account.ccnu.edu.cn/cas/login?service=https%3A%2F%2Fccnu.ai-augmented.com%2Fapi%2Fjw-starcmooc%2Fuser%2Fcas%2Flogin%3FschoolCertify%3D10511"
+    login_url = "https://infra.ai-augmented.com/app/auth/oauth2/login?response_type=code&state=njgzxn&client_id=xy_client_ccnu&redirect_uri=https://ccnu.ai-augmented.com/api/jw-starcmooc/user/authorCallback&school=10511&lang=zh_CN"
     dialog = requests.session()
     dialog.headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36 Edg/117.0.2045.47"
