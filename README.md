@@ -1,15 +1,18 @@
-# 小雅下载器
+# 🕷️CCNU小雅下载器
 
-python version : 3.11
+## Feature
 
-[python download link](https://www.python.org/downloads/)
+- 安全快速的下载所有来自小雅的课程文件
+- 即点即用的单文件程序，所有文件产生与程序文件夹内
+- 按照课程结构下载文件，方便查阅与使用
 
-using package : re/requests/beautifulsoup4
+## ToDo
 
-[package download link](https://pypi.org/)
+- [x] 使用方向键选择选项
+- [x] 将文件按照课程结构下载
+- [x] 使用账号密码登录
+- [ ] ~~下载全部视频~~
+- [x] 下载可下载视频（m3u8）
+- [x] Qt实现可视化浏览器下载
 
-目前已实现使用账号密码进行登录功能
-
-可选是否下载视频
-
-如有bug请提交issue
+-----------------------
