@@ -16,3 +16,7 @@
 - [x] Qt实现可视化浏览器下载
 
 -----------------------
+## Download
+
+第三方网盘：[下载链接](https://www.now61.com/s/bdNuG)
+GitHub Release：[下载链接](https://github.com/CN-Grace/CCNU-xiaoya-DownLoader-py/releases/latest)
