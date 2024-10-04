@@ -1,3 +1,4 @@
+import sys
 import time
 import requests
 import curses
@@ -223,7 +224,7 @@ class Menu:
                 std.attroff(curses.color_pair(2))
         x = int(w / 10)
         y = int(h - h / 10)
-        std.addstr(y, x, "← 前一页 → 后一页 ↑ 上一项 ↓ 下一项            ", curses.A_BOLD)
+        std.addstr(y, x, "←  前  一 页   →   后 一 页   ↑   上 一 项   ↓   下 一 项 ", curses.A_BOLD)
         std.refresh()
 
     def menu_selection(self, std: curses.window, menulist: List[str], menu_ids: List[str], t: str) -> str or bool:
@@ -237,7 +238,7 @@ class Menu:
         curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_WHITE)
         curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_BLACK)
         for i in range(0, len(menulist)):
-            menulist[i] = menulist[i] + " " * (len(menulist[i]))
+            menulist[i] = " ".join(list(menulist[i])) + " "
         while True:
             self.print_menu(std, current_row, menulist[current_page * menus_per_page: (current_page + 1) * menus_per_page],
                             t)
@@ -268,7 +269,6 @@ class Menu:
 
 
 def welcome():
-    # 使用制表字体写出XiaoYa
     text = """
      _  _  ____    __    _____  _  _    __   
     ( \/ )(_  _)  /__\  (  _  )( \/ )  /__\  
@@ -282,6 +282,7 @@ def welcome():
     """
     print(text)
 
+
 if __name__ == "__main__":
     welcome()
     time.sleep(2)
@@ -289,14 +290,14 @@ if __name__ == "__main__":
     menu = Menu()
     client.dialog.headers.update({"Authorization": client.login()})
     while True:
-        title = "请选择你要爬取的课程种类            "
+        title = "请 选 择 你 要 爬 取 的 课 程 种 类 "
         type_list = ["正在进行", "即将开课", "已结束"]
         id_list = [1, 2, 3]
         type_id = curses.wrapper(menu.menu_selection, type_list, id_list, title)
         if not type_id:
             client.logger.info("感谢使用")
             time.sleep(2)
-            exit()
+            sys.exit()
         else:
             name_list, id_list = client.get_courses(t=type_id)
             try:
@@ -306,24 +307,24 @@ if __name__ == "__main__":
                     client.logger.info("未找到课程")
                     time.sleep(2)
                 else:
-                    course_title = "请选择你要爬取的课程名称            "
+                    course_title = "请 选 择 你 要 爬 取 的 课 程 名 称 "
                     course_id = curses.wrapper(menu.menu_selection, name_list, id_list, course_title)
                     if not course_id:
                         client.logger.info("感谢使用")
                         time.sleep(2)
                     else:
-                        video_title = "是否下载可下载的视频资源            "
+                        video_title = "是 否 下 载 可 下 载 的 视 频 资 源 "
                         check = curses.wrapper(menu.menu_selection, check_list, yes_no, video_title)
                         if check == "N":
                             client.video = False
                         client.download_main(cid=course_id)
-                    check_title = "是否继续下载      "
+                    check_title = "是 否 继 续 下 载 "
                     check = curses.wrapper(menu.menu_selection, check_list, yes_no, check_title)
                     os.chdir("../")
                     if check == "N":
                         client.logger.info("感谢使用")
                         time.sleep(2)
-                        exit()
+                        sys.exit()
             except Exception as e:
                 client.logger.error(e)
                 client.logger.info("下载失败")
